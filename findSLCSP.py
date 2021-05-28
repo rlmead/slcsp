@@ -19,6 +19,8 @@ def main():
     silverPlans = plans[plans['metal_level'] == 'Silver'].sort_values('rate').groupby(['state','rate_area'])['rate'].apply(list).reset_index()
 
     # 3. Query across first two tables to find SLCSP per zip code
+    mergeSlcspZip = slcsp.merge(unambiguousZips,how='left',on='zipcode')
+    outputData = mergeSlcspZip.merge(silverPlans,how='left',on=['state','rate_area'])
 
     # 4. Return the necessary info 
     print("zipcode,rate")

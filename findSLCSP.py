@@ -15,7 +15,8 @@ def main():
     # b. remove *all* occurrences of duplicate zip codes (now, duplicates indicate ambiguity by rate area)
     unambiguousZips = zipsByRateArea.drop_duplicates(['zipcode'],keep=False)
 
-    # 2. Consolidate silver plans by state+rate_area
+    # 2. Consolidate silver plans by state+rate_area into sorted rate list
+    silverPlans = plans[plans['metal_level'] == 'Silver'].sort_values('rate').groupby(['state','rate_area'])['rate'].apply(list).reset_index()
 
     # 3. Query across first two tables to find SLCSP per zip code
 

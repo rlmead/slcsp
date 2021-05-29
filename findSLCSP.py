@@ -28,7 +28,7 @@ def main():
     outputData = slcsp.drop('rate', axis='columns').merge(unambiguousZips,how='left',on='zipcode').merge(slcspRates,how='left',on=['state','rate_area']).fillna('')
 
     # 4. Return the necessary info 
-    print("zipcode,rate")
+    print(outputData[['zipcode','rate']].to_csv(index=False))
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

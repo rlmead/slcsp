@@ -2,8 +2,8 @@ import pandas
 
 # Read the necessary data from csv files into dataframes
 plans = pandas.read_csv('./plans.csv')
-slcsp = pandas.read_csv('./slcsp.csv')
-zips = pandas.read_csv('./zips.csv')
+slcsp = pandas.read_csv('./slcsp.csv',dtype={'zipcode': 'str'})
+zips = pandas.read_csv('./zips.csv',dtype={'zipcode': 'str'})
 
 def getSecondItem(list):
     if len(list) > 1:

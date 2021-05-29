@@ -21,13 +21,11 @@ def main():
     # b. remove *all* occurrences of duplicate zip codes (now, duplicates indicate ambiguity by rate area)
     unambiguousZips = zipsByRateArea.drop_duplicates(['zipcode'],keep=False)
 
-    # 2. Gather silver plan rates by state+rate_area and create a new dataframe that 
-    slcSilverPlans = plans[plans['metal_level'] == 'Silver'].sort_values('rate').groupby(['state','rate_area'])['rate'].apply(list).apply(getSecondItem).reset_index()
+    # 2. Gather silver plan rates by state+rate_area and create a new dataframe with second-lowest-cost-per-area rates, where they exist
+    slcspRates = plans[plans['metal_level'] == 'Silver'].sort_values('rate').groupby(['state','rate_area'])['rate'].apply(list).apply(getSecondItem).reset_index()
 
-    # 3. Query across first two tables to find SLCSP per zip code
-    mergeSlcspZip = slcsp.merge(unambiguousZips,how='left',on='zipcode')
-    outputData = mergeSlcspZip.merge(slcSilverPlans,how='left',on=['state','rate_area'])
-    outputData.fillna('')
+    # 3. Merge slcsp, unambiguousZips, and  dataframes to find SLCSP per zip code
+    outputData = slcsp.drop('rate', axis='columns').merge(unambiguousZips,how='left',on='zipcode').merge(slcspRates,how='left',on=['state','rate_area']).fillna('')
 
     # 4. Return the necessary info 
     print("zipcode,rate")

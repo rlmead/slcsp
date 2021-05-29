@@ -5,6 +5,12 @@ plans = pandas.read_csv('./plans.csv')
 slcsp = pandas.read_csv('./slcsp.csv')
 zips = pandas.read_csv('./zips.csv')
 
+def getSecondItem(list):
+    if len(list) > 1:
+        return list[1]
+    else:
+        return ''
+
 # Define function to calculate second lowest cost silver plan
 def main():
     # 1. Get list of zips with their state+rate_area, where unambiguous
@@ -15,12 +21,13 @@ def main():
     # b. remove *all* occurrences of duplicate zip codes (now, duplicates indicate ambiguity by rate area)
     unambiguousZips = zipsByRateArea.drop_duplicates(['zipcode'],keep=False)
 
-    # 2. Consolidate silver plans by state+rate_area into sorted rate list
-    silverPlans = plans[plans['metal_level'] == 'Silver'].sort_values('rate').groupby(['state','rate_area'])['rate'].apply(list).reset_index()
+    # 2. Gather silver plan rates by state+rate_area and create a new dataframe that 
+    slcSilverPlans = plans[plans['metal_level'] == 'Silver'].sort_values('rate').groupby(['state','rate_area'])['rate'].apply(list).apply(getSecondItem).reset_index()
 
     # 3. Query across first two tables to find SLCSP per zip code
     mergeSlcspZip = slcsp.merge(unambiguousZips,how='left',on='zipcode')
-    outputData = mergeSlcspZip.merge(silverPlans,how='left',on=['state','rate_area'])
+    outputData = mergeSlcspZip.merge(slcSilverPlans,how='left',on=['state','rate_area'])
+    outputData.fillna('')
 
     # 4. Return the necessary info 
     print("zipcode,rate")

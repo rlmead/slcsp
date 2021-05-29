@@ -5,9 +5,10 @@ plans = pandas.read_csv('./plans.csv')
 slcsp = pandas.read_csv('./slcsp.csv',dtype={'zipcode': 'str'})
 zips = pandas.read_csv('./zips.csv',dtype={'zipcode': 'str'})
 
+# Define helper function to get and format the second item in a list of dollar amount rates
 def getSecondItem(list):
     if len(list) > 1:
-        return list[1]
+        return str('{:.2f}'.format(round(list[1],2)))
     else:
         return ''
 

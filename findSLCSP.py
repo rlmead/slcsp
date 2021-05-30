@@ -5,7 +5,7 @@ hardcodedPlansCSV = './plans.csv'
 hardcodedSlcspCSV = './slcsp.csv'
 hardcodedZipsCSV = './zips.csv'
 
-# Define helper function to get and format the second-lowest item in a list of dollar amount rates
+# Define helper function to get the second-lowest item in a list of dollar amount rates and return it formatted correctly as a string
 def getSecondLowest(inputList):
     uniqueOrderedList = list(set(inputList))
     uniqueOrderedList.sort()

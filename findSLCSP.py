@@ -32,7 +32,7 @@ def main(plansCSV,slcspCSV,zipsCSV):
     # 3. Gather silver plan rates by state+rate_area and use helper function to create a new dataframe with second-lowest-cost-per-area rates, where they exist
     slcspRates = plans[plans['metal_level'] == 'Silver'].groupby(['state','rate_area'])['rate'].apply(list).apply(getSecondLowest).reset_index()
 
-    # 4. Merge slcsp, unambiguousZips, and slcspRates dataframes to find rate per zip code
+    # 4. Merge slcsp, unambiguousZips, and slcspRates into a dataframe with slcsp rate per zip code
     outputData = slcsp.drop('rate', axis='columns').merge(unambiguousZips,how='left',on='zipcode').merge(slcspRates,how='left',on=['state','rate_area']).fillna('')
 
     # 5. Return zipcode & rate colums from outputData dataframe

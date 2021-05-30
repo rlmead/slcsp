@@ -5,7 +5,7 @@ hardcodedPlansCSV = './plans.csv'
 hardcodedSlcspCSV = './slcsp.csv'
 hardcodedZipsCSV = './zips.csv'
 
-# Define helper function to get and format the second-highest item in a list of dollar amount rates
+# Define helper function to get the second-lowest item in a list of dollar amount rates and return it formatted correctly (or return empty string if there's no second-lowest item)
 def getSecondLowest(inputList):
     uniqueOrderedList = list(set(inputList))
     uniqueOrderedList.sort()
@@ -16,7 +16,7 @@ def getSecondLowest(inputList):
 
 # Define main function to calculate second lowest cost silver plan per zip code
 def main(plansCSV,slcspCSV,zipsCSV):
-    # 1. Read csv files into pandas dataframes
+    # 1. Read csv input files into pandas dataframes
     plans = pandas.read_csv(plansCSV)
     slcsp = pandas.read_csv(slcspCSV,dtype={'zipcode': 'str'})
     zips = pandas.read_csv(zipsCSV,dtype={'zipcode': 'str'})
@@ -29,10 +29,10 @@ def main(plansCSV,slcspCSV,zipsCSV):
     # b. Remove *all* occurrences of duplicate zip codes (these duplicates are ambiguous by rate area, so their slcsp can't be calculated)
     unambiguousZips = zipsByRateArea.drop_duplicates(['zipcode'],keep=False)
 
-    # 3. Gather silver plan rates by state+rate_area, order them from low to high, and create a new dataframe with second-lowest-cost-per-area rates, where they exist
+    # 3. Gather silver plan rates by state+rate_area and use helper function to create a new dataframe with second-lowest-cost-per-area rates, where they exist
     slcspRates = plans[plans['metal_level'] == 'Silver'].groupby(['state','rate_area'])['rate'].apply(list).apply(getSecondLowest).reset_index()
 
-    # 4. Merge slcsp, unambiguousZips, and slcspRates dataframes to find rate per zip code
+    # 4. Merge slcsp, unambiguousZips, and slcspRates into a dataframe mapping zip code to slcsp rate
     outputData = slcsp.drop('rate', axis='columns').merge(unambiguousZips,how='left',on='zipcode').merge(slcspRates,how='left',on=['state','rate_area']).fillna('')
 
     # 5. Return zipcode & rate colums from outputData dataframe

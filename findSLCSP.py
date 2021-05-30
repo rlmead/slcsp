@@ -5,7 +5,7 @@ hardcodedPlansCSV = './plans.csv'
 hardcodedSlcspCSV = './slcsp.csv'
 hardcodedZipsCSV = './zips.csv'
 
-# Define helper function to get and format the second-highest item in a list of dollar amount rates
+# Define helper function to get and format the second-lowest item in a list of dollar amount rates
 def getSecondLowest(inputList):
     uniqueOrderedList = list(set(inputList))
     uniqueOrderedList.sort()
@@ -29,7 +29,7 @@ def main(plansCSV,slcspCSV,zipsCSV):
     # b. Remove *all* occurrences of duplicate zip codes (these duplicates are ambiguous by rate area, so their slcsp can't be calculated)
     unambiguousZips = zipsByRateArea.drop_duplicates(['zipcode'],keep=False)
 
-    # 3. Gather silver plan rates by state+rate_area, order them from low to high, and create a new dataframe with second-lowest-cost-per-area rates, where they exist
+    # 3. Gather silver plan rates by state+rate_area and use helper function to create a new dataframe with second-lowest-cost-per-area rates, where they exist
     slcspRates = plans[plans['metal_level'] == 'Silver'].groupby(['state','rate_area'])['rate'].apply(list).apply(getSecondLowest).reset_index()
 
     # 4. Merge slcsp, unambiguousZips, and slcspRates dataframes to find rate per zip code

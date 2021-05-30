@@ -6,7 +6,7 @@ slcsp = pandas.read_csv('./slcsp.csv',dtype={'zipcode': 'str'})
 zips = pandas.read_csv('./zips.csv',dtype={'zipcode': 'str'})
 
 # Define helper function to get and format the second-highest item in a list of dollar amount rates
-def getSecondHighest(inputList):
+def getSecondLowest(inputList):
     uniqueOrderedList = list(set(inputList))
     uniqueOrderedList.sort()
     if len(uniqueOrderedList) > 1:
@@ -25,7 +25,7 @@ def main():
     unambiguousZips = zipsByRateArea.drop_duplicates(['zipcode'],keep=False)
 
     # 2. Gather silver plan rates by state+rate_area, order them from low to high, and create a new dataframe with second-lowest-cost-per-area rates, where they exist
-    slcspRates = plans[plans['metal_level'] == 'Silver'].groupby(['state','rate_area'])['rate'].apply(list).apply(getSecondHighest).reset_index()
+    slcspRates = plans[plans['metal_level'] == 'Silver'].groupby(['state','rate_area'])['rate'].apply(list).apply(getSecondLowest).reset_index()
 
     # 3. Merge slcsp, unambiguousZips, and slcspRates dataframes to find rate per zip code
     outputData = slcsp.drop('rate', axis='columns').merge(unambiguousZips,how='left',on='zipcode').merge(slcspRates,how='left',on=['state','rate_area']).fillna('')
